@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Secret Manager</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        p { color: #555; }
+        a { text-decoration: none; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>About My Secret Manager</h1>
+    <p>This is a simple web application designed to securely store and manage your personal or application secrets.</p>
+    <p>It was built as a learning project to demonstrate:
+        <ul>
+            <li>Flask web framework</li>
+            <li>User authentication with Flask-Login and Flask-Bcrypt</li>
+            <li>Database management with Flask-SQLAlchemy and Flask-Migrate</li>
+            <li>Encryption of sensitive data with the cryptography library</li>
+            <li>Basic web server deployment with Apache and mod_wsgi</li>
+        </ul>
+    </p>
+    <p><a href="{{ url_for('index') }}">Back to Home</a></p>
+</body>
+</html>

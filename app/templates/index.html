@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Manager Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; display: inline-block; margin-right: 20px;} /* Added for spacing */
+        .auth-links { display: inline-block; } /* Added for spacing */
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 10px; padding: 8px; border: 1px solid #ddd; background-color: #f9f9f9; }
+        .flash { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; padding: 10px; margin-bottom: 15px; }
+        a { text-decoration: none; color: #007bff; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>My Secret Manager</h1>
+    <div class="auth-links">
+    {% if current_user.is_authenticated %}
+        <span>Logged in as: <strong>{{ current_user.username }}</strong></span> |
+        <a href="{{ url_for('logout') }}">Logout</a> |
+        <a href="{{ url_for('upload_file') }}">Upload File to SFTP</a> | 
+        <a href="{{ url_for('list_files') }}">List Files on SFTP</a>
+    {% else %}
+        <a href="{{ url_for('login') }}">Login</a> |
+        <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+</div>
+
+   
+<p><a href="{{ url_for('about') }}">About This App</a></p>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Stored Secrets</h2>
+    {% if secrets %}
+        <ul>
+            {% for secret in secrets %} {# Changed 'name, value' to 'secret' #}
+                <li>
+                    <strong>{{ secret.name }}:</strong> {{ secret.decrypted_value }} {# Access secret.name and new decrypted_value attribute #}
+                    (<a href="{{ url_for('edit_secret', secret_id=secret.id) }}">Edit</a>)
+                    (<a href="{{ url_for('delete_secret', secret_id=secret.id) }}">Delete</a>) {# Changed to secret_id for URL #}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No secrets stored yet. Add one!</p>
+    {% endif %}
+    <h2>Add New Secret</h2>
+    <form action="{{ url_for('add_secret') }}" method="post">
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name" required><br><br>
+        <label for="value">Value:</label><br>
+        <input type="text" id="value" name="value" required><br><br>
+        <input type="submit" value="Add Secret">
+    </form>
+
+</body>
+</html>

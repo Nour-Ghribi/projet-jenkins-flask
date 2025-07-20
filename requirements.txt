@@ -1,0 +1,8 @@
+Flask
+cryptography
+Flask-Login
+Flask-Bcrypt
+Flask-Migrate
+Flask-SQLAlchemy
+psycopg2-binary
+paramiko
