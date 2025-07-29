@@ -1,29 +1,37 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = "flask-app"
+        DOCKER_TAG = "latest"
+    }
+
     stages {
-        stage('Cloner le projet') {
+        stage('Clone repository') {
             steps {
                 git 'https://github.com/Nour-Ghribi/projet-jenkins-flask.git'
             }
         }
 
-        stage('Construire avec Docker Compose') {
+        stage('Build Docker image') {
             steps {
-                sh 'docker-compose build'
+                script {
+                    sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
+                }
             }
         }
 
-        stage('Tester') {
+        stage('Run Docker container') {
             steps {
-                sh 'docker-compose run --rm flaskapp pytest'
-            }
-        }
+                script {
+                    // Stop previous container if running
+                    sh 'docker rm -f flask-container || true'
 
-        stage('Déployer') {
-            steps {
-                sh 'docker-compose up -d'
+                    // Run new container
+                    sh 'docker run -d -p 5000:5000 --name flask-container $DOCKER_IMAGE:$DOCKER_TAG'
+                }
             }
         }
     }
 }
+
