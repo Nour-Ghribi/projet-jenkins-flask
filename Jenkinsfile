@@ -1,36 +1,48 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = "flask-app"
-        DOCKER_TAG = "latest"
+    stages {
+        stage('Clone Repository') {
+            steps {
+                echo "📦 Clonage du projet depuis GitHub..."
+                git(
+                    url: 'https://github.com/Nour-Ghribi/projet-jenkins-flask.git',
+                    branch: 'main',  // ou 'master' si tu utilises cette branche
+                    changelog: true,
+                    poll: true
+                )
+            }
+        }
+
+        stage('Build Docker Images') {
+            steps {
+                echo "🏗️ Construction des images avec docker-compose..."
+                sh 'docker-compose build'
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo "🚀 Déploiement des conteneurs..."
+                sh 'docker-compose down --remove-orphans || true'
+                sh 'docker-compose up -d'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                echo "✅ Vérification du déploiement..."
+                sh 'docker ps'
+            }
+        }
     }
 
-    stages {
-        stage('Clone repository') {
-            steps {
-                git 'https://github.com/Nour-Ghribi/projet-jenkins-flask.git'
-            }
+    post {
+        success {
+            echo '✅ Déploiement réussi ! Accès : http://34.34.143.152:5000'
         }
-
-        stage('Build Docker image') {
-            steps {
-                script {
-                    sh 'docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
-                }
-            }
-        }
-
-        stage('Run Docker container') {
-            steps {
-                script {
-                    // Stop previous container if running
-                    sh 'docker rm -f flask-container || true'
-
-                    // Run new container
-                    sh 'docker run -d -p 5000:5000 --name flask-container $DOCKER_IMAGE:$DOCKER_TAG'
-                }
-            }
+        failure {
+            echo '❌ Échec du déploiement. Vérifie les logs Jenkins.'
         }
     }
 }
