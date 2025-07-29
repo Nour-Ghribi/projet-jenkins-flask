@@ -7,9 +7,8 @@ pipeline {
                 echo "📦 Clonage du projet depuis GitHub..."
                 git(
                     url: 'https://github.com/Nour-Ghribi/projet-jenkins-flask.git',
-                    branch: 'main',  // ou 'master' si tu utilises cette branche
-                    changelog: true,
-                    poll: true
+                    branch: 'main',
+                    credentialsId: 'github-tokenn'
                 )
             }
         }
@@ -46,4 +45,3 @@ pipeline {
         }
     }
 }
-
