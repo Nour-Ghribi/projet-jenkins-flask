@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('🏗 Build Docker Images') {
+        stage(' Build Docker Images') {
             steps {
                 echo "Construction des images Docker..."
                 sh 'docker-compose build'
@@ -59,7 +59,7 @@ pipeline {
             }
         }
 
-        stage('🔍 Verify Deployment') {
+        stage(' Verify Deployment') {
             steps {
                 echo "Vérification des conteneurs en cours..."
                 sh 'docker ps'
