@@ -23,12 +23,13 @@ pipeline {
         stage('🧪 Run Unit Tests') {
             steps {
                 echo "Lancement des tests unitaires..."
+                // Important : l’activation de l’environnement virtuel doit être dans la même ligne de commande (sh)
                 sh '''
                     python3 -m venv venv
-                    . venv/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
-                    pip install pytest
+                    . venv/bin/activate && \
+                    pip install --upgrade pip && \
+                    pip install -r requirements.txt && \
+                    pip install pytest && \
                     pytest --maxfail=1 --disable-warnings -q
                 '''
             }
