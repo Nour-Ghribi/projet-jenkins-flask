@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        stage('📦 Clone Repository') {
+        stage(' Clone Repository') {
             steps {
                 echo "Clonage du projet depuis GitHub..."
                 git(
@@ -20,7 +20,7 @@ pipeline {
             }
         }
 
-        stage('🧪 Run Unit Tests') {
+        stage(' Run Unit Tests') {
             steps {
                 echo "Lancement des tests unitaires..."
                 // Important : l’activation de l’environnement virtuel doit être dans la même ligne de commande (sh)
@@ -35,14 +35,14 @@ pipeline {
             }
         }
 
-        stage('🏗️ Build Docker Images') {
+        stage('🏗 Build Docker Images') {
             steps {
                 echo "Construction des images Docker..."
                 sh 'docker-compose build'
             }
         }
 
-        stage('🚀 Deploy to Production') {
+        stage(' Deploy to Production') {
             steps {
                 script {
                     echo "Déploiement des conteneurs..."
