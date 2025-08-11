@@ -3,51 +3,76 @@ pipeline {
 
     environment {
         DOCKER_HOST = 'unix:///var/run/docker.sock'
+        GIT_REPO = 'https://github.com/Nour-Ghribi/projet-jenkins-flask.git'
+        GIT_BRANCH = 'main'
+        GIT_CREDENTIALS = 'github-tokenn'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('📦 Clone Repository') {
             steps {
-                echo "📦 Clonage du projet depuis GitHub..."
+                echo "Clonage du projet depuis GitHub..."
                 git(
-                    url: 'https://github.com/Nour-Ghribi/projet-jenkins-flask.git',
-                    branch: 'main',
-                    credentialsId: 'github-tokenn'
+                    url: "${GIT_REPO}",
+                    branch: "${GIT_BRANCH}",
+                    credentialsId: "${GIT_CREDENTIALS}"
                 )
             }
         }
 
-        stage('Build Docker Images') {
+        stage('🧪 Run Unit Tests') {
             steps {
-                echo "🏗️ Construction des images avec docker-compose..."
-                sh 'docker-compose build || exit 1'
+                echo "Lancement des tests unitaires..."
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    pip install pytest
+                    pytest --maxfail=1 --disable-warnings -q
+                '''
             }
         }
 
-        stage('Deploy to Production') {
+        stage('🏗️ Build Docker Images') {
             steps {
-                echo "🚀 Déploiement des conteneurs..."
-                sh 'docker-compose down --remove-orphans || true'
-                sh 'docker-compose up -d || exit 1'
+                echo "Construction des images Docker..."
+                sh 'docker-compose build'
             }
         }
 
-        stage('Verify Deployment') {
+        stage('🚀 Deploy to Production') {
             steps {
-                echo "✅ Vérification du déploiement..."
-                sh 'docker ps || exit 1'
+                script {
+                    echo "Déploiement des conteneurs..."
+                    try {
+                        sh 'docker-compose down --remove-orphans || true'
+                        sh 'docker-compose up -d'
+                    } catch (err) {
+                        echo "⚠️ Échec du déploiement, rollback..."
+                        sh 'docker-compose down || true'
+                        sh 'docker-compose up -d'
+                        error("Rollback effectué, déploiement initial échoué.")
+                    }
+                }
+            }
+        }
+
+        stage('🔍 Verify Deployment') {
+            steps {
+                echo "Vérification des conteneurs en cours..."
+                sh 'docker ps'
+                echo "Application disponible sur : http://34.34.160.216:5000"
             }
         }
     }
 
     post {
         success {
-            echo '✅ Déploiement réussi ! Accès : http://34.34.143.152:5000'
+            echo '✅ Pipeline terminé avec succès !'
         }
         failure {
-            echo '❌ Échec du déploiement. Vérifie les logs Jenkins.'
+            echo '❌ Le pipeline a échoué. Vérifiez les logs Jenkins.'
         }
     }
 }
-
-
