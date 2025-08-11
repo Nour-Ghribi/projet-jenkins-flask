@@ -1,8 +1,14 @@
 # tests/test_app.py
 
+import sys
+import os
 import pytest
-from main import app  # importe ton app Flask
+
+# Ajouter le dossier parent au path avant d'importer main
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from main import app  # importe ton app Flask
+
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
@@ -21,4 +27,3 @@ def test_login_page(client):
     response = client.get('/login')
     assert response.status_code == 200
     assert b'Login' in response.data  # vérifie que "Login" est dans la page
-
